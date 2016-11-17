@@ -39,10 +39,10 @@ public:
     void addLabel(const TextStyle::Parameters& _params, Label::Type _type,
                   Label::WorldTransform _transform);
 
-    void addLabel(const TextStyle::Parameters& _params, Label::WorldTransform _transform,
-                  size_t _anchor, std::vector<glm::vec2> _line);
-
     void addLineTextLabels(const Feature& _feature, const TextStyle::Parameters& _params);
+
+    bool addStraightTextLabels(const Line& _feature, const TextStyle::Parameters& _params);
+    void addCurvedTextLabels(const Line& _feature, const TextStyle::Parameters& _params);
 
     std::string applyTextTransform(const TextStyle::Parameters& _params, const std::string& _string);
 
@@ -81,6 +81,7 @@ protected:
     } m_attributes;
 
     float m_tileSize = 0;
+    float m_tileScale = 0;
 };
 
 }
