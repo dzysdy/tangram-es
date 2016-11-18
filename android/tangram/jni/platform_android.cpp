@@ -327,6 +327,11 @@ void setCurrentThreadPriority(int priority) {
     setpriority(PRIO_PROCESS, tid, priority);
 }
 
+void labelsPickCallback(jobject listener, const std::vector<Tangram::TouchLabel>& labels) {
+
+    // TODO
+}
+
 void featurePickCallback(jobject listener, const std::vector<Tangram::TouchItem>& items) {
 
     JniThreadBinding jniEnv(jvm);
@@ -338,7 +343,7 @@ void featurePickCallback(jobject listener, const std::vector<Tangram::TouchItem>
     if (items.size() > 0) {
         auto result = items[0];
         auto properties = result.properties;
-        auto labels = result.labels;
+        // auto labels = result.labels;
 
         position[0] = result.position[0];
         position[1] = result.position[1];
@@ -349,16 +354,17 @@ void featurePickCallback(jobject listener, const std::vector<Tangram::TouchItem>
             jniEnv->CallObjectMethod(hashmap, hashmapPutMID, jkey, jvalue);
         }
 
-        for (auto label : labels) {
-            jdoubleArray darr = jniEnv->NewDoubleArray(label.coordinates.size() * 2);
-            jniEnv->SetDoubleArrayRegion(darr, 0, label.coordinates.size() * 2,
-                    reinterpret_cast<jdouble*>(label.coordinates.data()));
-            jobject touchLabel = jniEnv->NewObject(touchLabelClass, touchLabelInitMID, darr, label.type);
-            jniEnv->CallBooleanMethod(list, listAddMID, touchLabel);
-        }
+        //for (auto label : labels) {
+        //    jdoubleArray darr = jniEnv->NewDoubleArray(label.coordinates.size() * 2);
+        //    jniEnv->SetDoubleArrayRegion(darr, 0, label.coordinates.size() * 2,
+        //            reinterpret_cast<jdouble*>(label.coordinates.data()));
+        //    jobject touchLabel = jniEnv->NewObject(touchLabelClass, touchLabelInitMID, darr, label.type);
+        //    jniEnv->CallBooleanMethod(list, listAddMID, touchLabel);
+        //}
     }
 
-    jniEnv->CallVoidMethod(listener, onFeaturePickMID, hashmap, list, position[0], position[1]);
+    // jniEnv->CallVoidMethod(listener, onFeaturePickMID, hashmap, list, position[0], position[1]);
+    jniEnv->CallVoidMethod(listener, onFeaturePickMID, hashmap, position[0], position[1]);
     jniEnv->DeleteGlobalRef(listener);
 }
 

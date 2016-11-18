@@ -71,11 +71,14 @@ public class MapController implements Renderer {
         /**
          * Receive information about features found in a call to {@link #pickFeature(float, float)}
          * @param properties A mapping of string keys to string or number values
-         * @param labels The list of selected feature labels, empty otherwise
          * @param positionX The horizontal screen coordinate of the center of the feature
          * @param positionY The vertical screen coordinate of the center of the feature
          */
-        void onFeaturePick(Map<String, String> properties, List<TouchLabel> labels, float positionX, float positionY);
+        void onFeaturePick(Map<String, String> properties, float positionX, float positionY);
+    }
+
+    public interface LabelsPickListener {
+        void onLabelsPick(List<TouchLabel> labels);
     }
 
     public interface ViewCompleteListener {
@@ -653,6 +656,17 @@ public class MapController implements Renderer {
         }
     }
 
+    public void setLabelsPickListener(LabelsPickListener listener) {
+        labelsPickListener = listener;
+    }
+
+    public void pickLabels(float posX, float posY) {
+        if (labelsPickListener != null) {
+            checkPointer(mapPointer);
+            nativePickLabels(mapPointer, posX, posY, labelsPickListener);
+        }
+    }
+
     /**
      * Adds a {@link Marker} to the map which can be used to dynamically add points and polylines
      * to the map.
@@ -863,6 +877,7 @@ public class MapController implements Renderer {
     private synchronized native void nativeQueueSceneUpdate(long mapPtr, String componentPath, String value);
     private synchronized native void nativeApplySceneUpdates(long mapPtr);
     private synchronized native void nativePickFeature(long mapPtr, float posX, float posY, FeaturePickListener listener);
+    private synchronized native void nativePickLabels(long mapPtr, float posX, float posY, LabelsPickListener listener);
     private synchronized native long nativeMarkerAdd(long mapPtr);
     private synchronized native boolean nativeMarkerRemove(long mapPtr, long markerID);
     private synchronized native boolean nativeMarkerSetStyling(long mapPtr, long markerID, String styling);
@@ -902,6 +917,7 @@ public class MapController implements Renderer {
     private DisplayMetrics displayMetrics = new DisplayMetrics();
     private HttpHandler httpHandler;
     private FeaturePickListener featurePickListener;
+    private LabelsPickListener labelsPickListener;
     private ViewCompleteListener viewCompleteListener;
     private FrameCaptureCallback frameCaptureCallback;
     private boolean frameCaptureAwaitCompleteView;
