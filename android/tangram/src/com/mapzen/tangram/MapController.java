@@ -78,7 +78,7 @@ public class MapController implements Renderer {
     }
 
     public interface LabelsPickListener {
-        void onLabelsPick(List<TouchLabel> labels);
+        void onLabelsPick(List<TouchLabel> labels, float positionX, float positionY);
     }
 
     public interface ViewCompleteListener {
